@@ -1,8 +1,8 @@
 import numpy as np
 from PIL import Image
 
-im_big = Image.open(r"/Users/mokha/Sites/mapping_scripts/first1.png")
-im_small = Image.open(r"/Users/mokha/Sites/mapping_scripts/first2.png")
+im_big = Image.open(r"/Users/mokha/Sites/mapping_scripts/first-task/first1.png")
+im_small = Image.open(r"/Users/mokha/Sites/mapping_scripts/first-task/first2.png")
 
 
 def find_matches(big, small):
