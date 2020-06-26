@@ -4,17 +4,23 @@ import numpy as np
 import json
 import os
 import glob
-
+from os import path
 from PIL import Image
 import zlib
 import io
 import base64
 
 img_dir = []
-for filename in glob.glob('../../piconha2_jpg'):
-    im=Image.open(filename)
-    img_dir.append(im)
+directories= "/Users/arjunrao/Desktop/mapping_scriptsGit/mapping_scripts/piconha2_jpg"
+for root, dirs, files in os.walk(directories):
+    print(files)
+    img_dir.append(files)
     print(len(img_dir))
+# for filename in glob.glob('../../piconha2_jpg'):
+#     im=Image.open(filename)
+#     img_dir.append(im)
+#     print(len(img_dir))
+
 
 data_dir = os.path.join('.','Book of Fortresses','Book of Fortresses')
 ann_dir = os.path.join(data_dir,'ann')
@@ -50,6 +56,7 @@ for ann_path in ann_list:
 def find_matches(big, small):
     arr_h = np.asarray(big)
     arr_n = np.asarray(small)
+    print(arr_h)
 
     y_h, x_h = arr_h.shape[:2]
     y_n, x_n = arr_n.shape[:2]
@@ -74,12 +81,18 @@ def main():
 
     img_dir = []
     print("made it")
-    for filename in glob.glob('../piconha2_jpg'):
-        print("im here")
-        im=Image.open(filename)
-        img_dir.append(im)
+    # for filename in glob.glob('mapping_scripts/piconha2_jpg'):
+    #     print("im here")
+    #     im=Image.open(filename)
+    #     img_dir.append(im)
+    #     print(len(img_dir))
+    
+    for root, dirs, files in os.walk(directories):
+        #print(files)
+        for file in files:
+            img_dir.append(file)
+            print(file)
         print(len(img_dir))
-        
     for i in range(len(img_dir) - 1):
         print(find_matches(img_dir[i], img_dir[i+1]))
 
