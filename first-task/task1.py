@@ -73,6 +73,7 @@ def find_matches(big, small):
 def main():
 
     img_dir = []
+    print("made it")
     for filename in glob.glob('../piconha2_jpg'):
         print("im here")
         im=Image.open(filename)
