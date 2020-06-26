@@ -13,7 +13,8 @@ import base64
 img_dir = []
 for filename in glob.glob('../../piconha2_jpg'):
     im=Image.open(filename)
-    image_dir.append(im)
+    img_dir.append(im)
+    print(len(img_dir))
 
 data_dir = os.path.join('.','Book of Fortresses','Book of Fortresses')
 ann_dir = os.path.join(data_dir,'ann')
@@ -69,5 +70,18 @@ def find_matches(big, small):
 
     return matches
 
+def main():
 
-print(find_matches(im_big, im_small))
+    img_dir = []
+    for filename in glob.glob('../piconha2_jpg'):
+        print("im here")
+        im=Image.open(filename)
+        img_dir.append(im)
+        print(len(img_dir))
+        
+    for i in range(len(img_dir) - 1):
+        print(find_matches(img_dir[i], img_dir[i+1]))
+
+main()
+
+
