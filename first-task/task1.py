@@ -10,50 +10,27 @@ import zlib
 import io
 import base64
 
-img_dir = []
-directories= "/Users/arjunrao/Desktop/mapping_scriptsGit/mapping_scripts/piconha2_jpg"
+directories = "./piconha2_jpg"
 for root, dirs, files in os.walk(directories):
     print(files)
     img_dir.append(files)
     print(len(img_dir))
-# for filename in glob.glob('../../piconha2_jpg'):
-#     im=Image.open(filename)
-#     img_dir.append(im)
-#     print(len(img_dir))
 
-
+#create directory for JSON files from supervisely
 data_dir = os.path.join('.','Book of Fortresses','Book of Fortresses')
 ann_dir = os.path.join(data_dir,'ann')
-
 ann_list = glob.glob(os.path.join(ann_dir,'*.json'))
 
+#iterate over JSON files
 for ann_path in ann_list:
-
     print(ann_path)
-
-    # remove .json extension – should maybe use pathlib instead...
-    img_filename = os.path.splitext(os.path.basename(ann_path))[0]
-    # replace . with _ for mask subdirectory name
-    mask_subdir = img_filename.replace('.','_')
-    mask_subdir_path = os.path.join(mask_dir, mask_subdir)
-    # remove .jpg extension
-    img_name = os.path.splitext(img_filename)[0]
-    img_path = os.path.join(img_dir, img_filename)
-
-    img = skio.imread(img_path)
-
-    try:
-        os.mkdir(mask_subdir_path)
-    except OSError:
-        if not os.path.exists(mask_subdir_path):
-            sys.exit("Error creating: " + mask_subdir_path)
-
     with open(ann_path,'r') as f:
         annotations = json.load(f)
 
 
-
+#method to check for image overlap
 def find_matches(big, small):
+    #convert images to arrays
     arr_h = np.asarray(big)
     arr_n = np.asarray(small)
     print(arr_h)
@@ -77,25 +54,17 @@ def find_matches(big, small):
 
     return matches
 
-def main():
 
+def main():
     img_dir = []
-    print("made it")
-    # for filename in glob.glob('mapping_scripts/piconha2_jpg'):
-    #     print("im here")
-    #     im=Image.open(filename)
-    #     img_dir.append(im)
-    #     print(len(img_dir))
-    
     for root, dirs, files in os.walk(directories):
-        #print(files)
+        #print out files
         for file in files:
-            img_dir.append(file)
-            print(file)
+            img_dir.append(files)
+            print(files)
         print(len(img_dir))
+
     for i in range(len(img_dir) - 1):
         print(find_matches(img_dir[i], img_dir[i+1]))
 
 main()
-
-
