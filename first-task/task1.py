@@ -9,6 +9,7 @@ from PIL import Image
 import zlib
 import io
 import base64
+import numpy.ma as ma
 
 
 #create image directory
@@ -25,8 +26,16 @@ def match(big, small):
     #convert images to arrays
     arr_h = np.asarray(big)
     arr_n = np.asarray(small)
-    print(arr_h)
-    print(arr_n)
+    # arr_h = np.where(arr_h<1, np.random.normal(), arr_h) 
+    # arr_n = np.where(arr_n<1, np.random.normal(), arr_n)
+    
+    
+    
+    # print(arr_h)
+    # print(arr_n)
+    print(arr_h.shape[:2])
+    print(arr_n.shape[:2])
+
     y_h, x_h = arr_h.shape[:2]
     y_n, x_n = arr_n.shape[:2]
 
@@ -41,8 +50,17 @@ def match(big, small):
 
             arr_s = arr_h[ymin:ymax, xmin:xmax]     # Extract subimage
             arr_t = (arr_s == arr_n)                # Create test matrix
-            if arr_t.all():                         # Only consider exact matches
+            print(arr_s)
+            print(arr_t)
+            print((arr_s == arr_h).all(1).any())
+            if (arr_s == arr_h).all(1).any():                         # find if array contains other array
+                print(big, small)
+                print()
                 matches.append((xmin, ymin))
+            if(arr_h == arr_n).all():
+               return ("Identical Image")
+            if(!(arr_h == arr_n)).all():
+                return ("Different Images")
 
     return matches
     container = np.asarray(big)
@@ -59,13 +77,14 @@ def main():
     img_dir = []
     for root, dirs, files in os.walk(directories):
         #print out files
-        for j in range(len(files) - 1):
-            im = Image.open("mapping_scripts/overlap/" + files[j])
-            im2 = Image.open("mapping_scripts/overlap/" + files[j+1])
-            print(match(im, im2))
-            img_dir.append(files[j])
-            print(files[j])
-        print(len(img_dir))
+        for j in range(len(files)):
+            for k in range(len(files)):
+                im = Image.open("mapping_scripts/overlap/" + files[j])
+                im2 = Image.open("mapping_scripts/overlap/" + files[k])
+                print(match(im, im2))
+                img_dir.append(files[j])
+                print(files[j], files[k])
+            print(len(img_dir))
 
     # for i in range(len(img_dir) - 1):
     #     print(match(img_dir[i], img_dir[i+1]))
