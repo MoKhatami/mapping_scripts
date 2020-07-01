@@ -10,10 +10,10 @@ import zlib
 import io
 import base64
 import numpy.ma as ma
-
+import cv2
 
 #create image directory
-directories = "mapping_scripts/overlap"
+directories = "overlap"
 
 #create directory for JSON files from supervisely
 data_dir = os.path.join('.','Book of Fortresses','Book of Fortresses')
@@ -26,11 +26,11 @@ def match(big, small):
     #convert images to arrays
     arr_h = np.asarray(big)
     arr_n = np.asarray(small)
-    # arr_h = np.where(arr_h<1, np.random.normal(), arr_h) 
+    # arr_h = np.where(arr_h<1, np.random.normal(), arr_h)
     # arr_n = np.where(arr_n<1, np.random.normal(), arr_n)
-    
-    
-    
+
+
+
     # print(arr_h)
     # print(arr_n)
     print(arr_h.shape[:2])
@@ -55,12 +55,12 @@ def match(big, small):
             print((arr_s == arr_h).all(1).any())
             if (arr_s == arr_h).all(1).any():                         # find if array contains other array
                 print(big, small)
-                print()
                 matches.append((xmin, ymin))
+
             if(arr_h == arr_n).all():
                return ("Identical Image")
-            if(!(arr_h == arr_n)).all():
-                return ("Different Images")
+
+            return ("Different Images")
 
     return matches
     container = np.asarray(big)
@@ -79,11 +79,12 @@ def main():
         #print out files
         for j in range(len(files)):
             for k in range(len(files)):
-                im = Image.open("mapping_scripts/overlap/" + files[j])
-                im2 = Image.open("mapping_scripts/overlap/" + files[k])
+                im = Image.open("overlap/" + files[j])
+                im2 = Image.open("overlap/" + files[k])
                 print(match(im, im2))
                 img_dir.append(files[j])
                 print(files[j], files[k])
+                print()
             print(len(img_dir))
 
     # for i in range(len(img_dir) - 1):
