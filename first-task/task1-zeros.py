@@ -24,21 +24,23 @@ ann_list = glob.glob(os.path.join(ann_dir,'*.json'))
 def match(big, small):
     #convert images to arrays
     #convert images to arrays
-    arr_h = np.asarray(big)
-    arr_n = np.asarray(small)
+    arr_h = np.asarray(big) #forms pixel array of container
+    arr_n = np.asarray(small) #forms pixel array of label
     #ckb9l8t9x13rh0yd1dluf8y5x.png ckb9mmzok16kp0yejgwly0tz5.png
     #ckb9l8t9x13rh0yd1dluf8y5x.png ckb9lafog00d90ycqarsxdvyh.png
-    arr_hOnes = np.where(arr_h > 0, 1, arr_h)
-    arr_nOnes = np.where(arr_n > 0, 1, arr_n)
-    freq_h = np.count_nonzero(arr_hOnes == 1)
-    freq_n = np.count_nonzero(arr_nOnes == 1)
+    arr_hOnes = np.where(arr_h > 0, 1, arr_h) #set any values that are not 0 in container array to 1 for easy comparison
+    arr_nOnes = np.where(arr_n > 0, 1, arr_n) #set any values that are not 0 in label array to 1 for easy comparison
+    freq_h = np.count_nonzero(arr_hOnes == 1) #container pixels
+    freq_n = np.count_nonzero(arr_nOnes == 1) #label pixels
     print(arr_hOnes)
     print(arr_nOnes)
-    arr_and = arr_hOnes & arr_nOnes
+    arr_and = arr_hOnes & arr_nOnes #find where overlap is
     freq_and = np.count_nonzero(arr_and == 1)
-    print(freq_h, freq_n, freq_and)
-    if(freq_and > 0):
-        return 1
+    print(freq_h, freq_n, freq_and) #pixels covered by container, label, overlap respectively
+    if((freq_n + 100000 < freq_and) & (freq_n - 100000 > freq_and)):
+        return 1  #if overlapped region is within 100,000 pixels of the label, then we guess that this container holds this label
+    # if(freq_and > 0):
+    #     return 1
     
     #print(arr_and)
 
@@ -94,18 +96,18 @@ def main():
     img_dir = []
     for root, dirs, files in os.walk(directories):
         #print out files
-        for j in range(len(files)):
+        for j in range(len(files)): #iterate through all files and compare every image to every other image; NOTE: change this for loop for more efficiency by never repeating comparisons
             for k in range(len(files)):
                 im = Image.open("overlap/" + files[j])
                 im2 = Image.open("overlap/" + files[k])
-                result = match(im, im2)
+                result = match(im, im2) #run match function on two images
                 print(result)
                 if(result == 1):
-                    img_dir.append(files[j] + "  " + files[k])
+                    img_dir.append(files[j] + "  " + files[k]) # add container image name + label image name to a list
                 
                 
-                print(files[j], files[k])
-                print(img_dir)
+                print(files[j], files[k]) #prints two current images to be compared
+                print(img_dir) #prints current list of images that have been compared and a match has been found
 
     # for i in range(len(img_dir) - 1):
     #     print(match(img_dir[i], img_dir[i+1]))
