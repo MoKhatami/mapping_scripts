@@ -1,21 +1,18 @@
-from skimage import draw
-from skimage import io as skio
-import skimage
+# To use this script, configure your interpreter to use python3
+
 import numpy as np
-from matplotlib.pyplot import imread
 import json
 import os
 import glob
-from os import path
-from PIL import Image
-import zlib
-import io
-import numpy.ma as ma
-import cv2
 import base64
-import requests
+
+from matplotlib.pyplot import imread
+from os import path
+from io import BytesIO
+from PIL import Image
 
 
+#This function returns the origin of the label mask
 def bbox2(img):
     rows = np.any(img, axis=1)
     cols = np.any(img, axis=0)
@@ -28,48 +25,46 @@ def bbox2(img):
         cmin, cmax = (0,0)
     return (rmin,rmax+1), (cmin,cmax+1)
 
-def mask_2_base64(mask):
-    img_pil = Image.fromarray(np.array(mask, dtype=np.uint8))
-    img_pil.putpalette([0,0,0,255,255,255])
-    bytes_io = io.BytesIO()
-    img_pil.save(bytes_io, format='PNG', transparency=0, optimize=0)
-    bytes = bytes_io.getvalue()
-    return base64.b64encode(zlib.compress(bytes)).decode('utf-8')
 
-#Label, objects, instanceURI
-#create directory
+
+#create a file directory of the labelbox JSONs
 files = []
-filenames = []
 path = 'labelbox'
-map_dicts = []
 
 #iterate over JSONS and print filenames
 for filename in glob.glob(os.path.join(path, '*.json')): #only process .JSON files in folder.]\
-
     #open each JSON file
     with open(filename, encoding='utf-8', mode='r') as currentFile:
         data = currentFile.read()
         keyword = json.loads(data)
         files.append(keyword)
 
-    filenames.append(filename)
 
+for file in files:
 
-#for i in files:
-    #print(i['size']['height'])
+    # To get the instanceURI (or any element) from the labelbox JSON,
+    # you need to navigate the lists and dicts of the file
+    uri = file[1]['Label']['objects'][0]['instanceURI']
+    print(uri)
 
-label_box = files[0]
-uri = label_box[1]['Label']['objects'][0]['instanceURI']
-id = label_box[1]['Label']['objects'][0]['featureId']
-print(uri)
+    # Use the URI to extract a numpy image array from the server, put the array in mask_img
+    print('\t * Downloading mask image from server')
+    mask_img = imread(uri)
 
-print('\t * Downloading mask image from server')
-# Delay just so we don't get kicked off of the server...
-mask_img = imread(uri)
+    # Create cropped, alpha-masked image feature
+    (rmin,rmax),(cmin,cmax) = bbox2(mask_img[:,:,3])
+    img_masked = np.zeros((rmax-rmin,cmax-cmin,4), dtype=np.uint8)
+    img_masked[:,:,3] = mask_img[slice(rmin,rmax), slice(cmin,cmax), 3]
 
-origin = bbox2(mask_img)
+    # Use the numpy image array to find the origin
+    origin = bbox2(mask_img)
 
-data = base64.b64encode(requests.get(uri).content)
+    # Use the cropped image to create the base64 string that represents the image
+    pil_img = Image.fromarray(np.uint8(img_masked))
+    buff = BytesIO()
+    pil_img.save(buff, format="PNG")
+    data = base64.b64encode(buff.getvalue()).decode("utf-8")
 
-print(origin)
-print(data)
+    #print origin and then print the base64 string
+    print(origin)
+    print(data)
