@@ -13,22 +13,24 @@ import numpy.ma as ma
 import cv2
 
 
-class Supervisely_polygon:
-    def _init_(variables):
 
-#create directory
-files = []
-path = 'ann'
+def main():
+    #create directory
+    files = []
+    path = 'mapping_scripts/ann'
 
-#iterate over JSONS and print filenames
-for filename in glob.glob(os.path.join(path, '*.json')): #only process .JSON files in folder.]\
-    print(filename)
+    #iterate over JSONS and print filenames
+    for filename in glob.glob(os.path.join(path, '*.json')): #only process .JSON files in folder.]\
+        print(filename)
 
-    #open each JSON file
-    with open(filename, encoding='utf-8', mode='r') as currentFile:
-        data = currentFile.read()
-        keyword = json.loads(data)
-        files.append(keyword)
+        #open each JSON file
+        with open(filename, encoding='utf-8', mode='r') as currentFile:
+            data = currentFile.read()
+            keyword = json.loads(data)
+            files.append(keyword)
 
-for i in files:
-    print(i)
+    for i in files:
+        print(i)
+    currentFile.close()
+
+main()
