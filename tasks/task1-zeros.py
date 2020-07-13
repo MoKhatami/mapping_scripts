@@ -22,8 +22,8 @@ ann_list = glob.glob(os.path.join(ann_dir,'*.json'))
 
 #method to check for image overlap
 def match(big, small):
-    #convert images to arrays 
-    #convert images to arrays
+    #convert images to array
+    #convert images to array
     arr_h = np.asarray(big) #forms pixel array of container
     arr_n = np.asarray(small) #forms pixel array of label
     #ckb9l8t9x13rh0yd1dluf8y5x.png ckb9mmzok16kp0yejgwly0tz5.png
@@ -39,7 +39,7 @@ def match(big, small):
     print(freq_h, freq_n, freq_and) #pixels covered by container, label, overlap respectively
     if((freq_n + 100000 < freq_and) & (freq_n - 100000 > freq_and)):
         return 1  #if overlapped region is within 100,000 pixels of the label, then we guess that this container holds this label
-    
+
 
 def main():
     #create directory
@@ -60,9 +60,9 @@ def main():
                         containers = []
                         containers.append(obj['featureId'])
                         print(containers)
-            currentFile.close() #close the file 
+            currentFile.close() #close the file
 
-  
+
 
 
 main()
@@ -70,7 +70,7 @@ main()
 
 
 
-   
+
 
 
 
